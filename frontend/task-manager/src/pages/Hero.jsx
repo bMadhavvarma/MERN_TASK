@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 const Hero = ({ notes, setNotes }) => {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
@@ -19,7 +21,7 @@ const Hero = ({ notes, setNotes }) => {
 
     const updatedStatus = noteToUpdate.status === 'pending' ? 'completed' : 'pending';
 
-    axios.put(`http://localhost:3000/api/taskupdate/${id}`, {
+    axios.put(`${BASE_URL}/api/taskupdate/${id}`, {
       ...noteToUpdate,
       status: updatedStatus
     })
@@ -33,7 +35,7 @@ const Hero = ({ notes, setNotes }) => {
   };
 
   const deleteNote = (id) => {
-    axios.delete(`http://localhost:3000/api/taskdelete/${id}`)
+    axios.delete(`${BASE_URL}/api/taskdelete/${id}`)
       .then(() => {
         setNotes(notes.filter(note => note._id !== id));
       })
@@ -48,7 +50,7 @@ const Hero = ({ notes, setNotes }) => {
   };
 
   const saveUpdate = (id) => {
-    axios.put(`http://localhost:3000/api/taskupdate/${id}`, {
+    axios.put(`${BASE_URL}/api/taskupdate/${id}`, {
       title: editTitle,
       description: editContent,
       priority: editPriority
@@ -82,15 +84,21 @@ const Hero = ({ notes, setNotes }) => {
   const sortedNotes = sortNotesByStatus(notes);
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-900 min-h-screen text-black dark:text-white transition-colors">
+    <motion.div
+      initial={{ backgroundColor: darkMode ? '#111827' : '#ffffff' }}
+      animate={{ backgroundColor: darkMode ? '#111827' : '#ffffff' }}
+      transition={{ duration: 0.5 }}
+      className="p-6 min-h-screen text-black dark:text-white transition-colors"
+    >
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-semibold">Notes</h1>
-        <button
+        <motion.button
+          whileTap={{ scale: 0.9 }}
           onClick={() => setDarkMode(!darkMode)}
           className="px-4 py-2 rounded bg-gray-800 text-white dark:bg-white dark:text-black transition-colors"
         >
           Toggle {darkMode ? 'Light' : 'Dark'} Mode
-        </button>
+        </motion.button>
       </div>
 
       <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
@@ -128,7 +136,10 @@ const Hero = ({ notes, setNotes }) => {
                       <option value="medium">Medium</option>
                       <option value="low">Low</option>
                     </select>
-                    <button onClick={() => saveUpdate(note._id)} className="bg-green-600 text-white px-2 py-1 rounded mt-2">
+                    <button
+                      onClick={() => saveUpdate(note._id)}
+                      className="bg-green-600 text-white px-2 py-1 rounded mt-2"
+                    >
                       Save
                     </button>
                   </>
@@ -143,12 +154,13 @@ const Hero = ({ notes, setNotes }) => {
                     <p className="text-sm text-gray-500 mb-2">Priority: {note.priority}</p>
                     <p className="text-gray-800 dark:text-gray-100 mb-2">{note.description}</p>
                     <div className="flex justify-between items-center mt-4">
-                      <button
+                      <motion.button
+                        whileTap={{ scale: 0.95 }}
                         onClick={() => toggleStatus(note._id)}
                         className={`${note.status === 'completed' ? 'bg-green-600' : 'bg-yellow-500'} text-white px-2 py-1 rounded`}
                       >
                         {note.status === 'completed' ? 'Mark Pending' : 'Mark Completed'}
-                      </button>
+                      </motion.button>
                       <div className="flex gap-2">
                         <button
                           onClick={() => startEditing(note)}
@@ -182,13 +194,15 @@ const Hero = ({ notes, setNotes }) => {
         </AnimatePresence>
       </div>
 
-      <button
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
         onClick={() => (window.location.href = '/create')}
         className="fixed bottom-6 right-6 bg-blue-500 hover:bg-blue-700 text-white px-5 py-3 rounded-full shadow-lg text-lg font-semibold"
       >
         +
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 };
 
