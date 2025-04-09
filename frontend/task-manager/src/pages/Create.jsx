@@ -3,8 +3,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const BASE_URL = import.meta.env.VITE_API_URL;
-
 const Create = ({ setNotes }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -19,7 +17,7 @@ const Create = ({ setNotes }) => {
     const tags = priority ? [`#${priority.toLowerCase()}`] : [];
     const newNote = {
       title,
-      description: content,
+      description: content, // your backend expects "description"
       date: new Date().toLocaleDateString(),
       tags,
       pinned: true,
@@ -27,8 +25,10 @@ const Create = ({ setNotes }) => {
       priority: priority ? priority.toLowerCase() : 'medium'
     };
 
-    axios.put(`${BASE_URL}/api/task`, newNote)
+    // Use PUT for creation per your API definition
+    axios.put(`${import.meta.env.VITE_REACT_URL}/api/task`, newNote)
       .then((response) => {
+        // Prepend the new note from the backend response to state
         setNotes(prev => [response.data.data, ...prev]);
         navigate('/');
       })

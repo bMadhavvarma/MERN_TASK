@@ -6,22 +6,21 @@ import Hero from './pages/Hero';
 import Create from './pages/Create';
 import Nav from './components/Nav';
 
-const BASE_URL = import.meta.env.VITE_API_URL;
-
 const App = () => {
   const [isDark, setIsDark] = useState(true);
   const [notes, setNotes] = useState([]);
 
-  // Fetch tasks from backend
+  // Fetch tasks from backend when component mounts
   useEffect(() => {
-    axios.get(`${BASE_URL}/api/tasks`)
+    axios.get(`${import.meta.env.VITE_REACT_URL}/api/tasks`)
       .then(response => {
+        // Assuming your API response is structured as { message: string, data: [ ... ] }
         setNotes(response.data.data);
       })
       .catch(error => console.error('Error fetching tasks:', error));
   }, []);
 
-  // Sync theme
+  // Change theme as before
   useEffect(() => {
     const root = document.documentElement;
     if (isDark) {
